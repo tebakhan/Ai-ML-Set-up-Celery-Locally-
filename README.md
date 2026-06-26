@@ -1,119 +1,78 @@
-Hello World using Celery
-What is Celery?
+# Hello World using Celery
 
-Celery is a Python library used to run tasks in the background (asynchronously). Instead of making the main program wait for a task to finish, Celery sends the task to a worker. The worker executes it separately while the main program can continue doing other work.
+## 📌 Overview
 
-Example:
-Suppose a website needs to send an email after a user signs up. Sending the email may take a few seconds. Instead of making the user wait, the website sends the email task to Celery. Celery runs it in the background, and the user immediately gets the response.
+This project demonstrates a basic Celery background task using Redis as the message broker and result backend.
 
-What is Redis?
+The task waits for 2 seconds and then returns a simple message.
 
-Redis acts as a message broker in this project.
+---
 
-Its job is to store the task temporarily and deliver it to the Celery worker.
+## 🛠 Technologies Used
 
-In this project, Redis is also used as the result backend, which stores the result after the task is completed.
+- Python
+- Celery
+- Redis
 
-Code Explanation
-Step 1: Import Required Libraries
-from celery import Celery
-import time
-Celery is imported to create the Celery application.
-time is used to simulate a delay.
-Step 2: Create the Celery App
-app = Celery(
-    'tasks',
-    broker='redis://localhost:6379/0',
-    backend='redis://localhost:6379/0'
-)
+---
 
-Here we create a Celery application named tasks.
+## 📂 Project Files
 
-Broker → Redis receives the task and keeps it in the queue.
-Backend → Redis stores the result after the task finishes.
+```
+tasks.py
+```
 
-Both broker and backend are connected to Redis running on localhost at port 6379.
+---
 
-Step 3: Create the Task
-@app.task
-def hello_world():
+## ⚙️ How It Works
 
-@app.task tells Celery that this function should run as a background task.
+1. A Celery application is created.
+2. Redis is configured as the broker and result backend.
+3. The `hello_world` task is registered using `@app.task`.
+4. When the task is called, the Celery worker executes it in the background.
+5. The task waits for 2 seconds and returns a success message.
 
-Without this decorator, Celery cannot execute the function asynchronously.
+---
 
-Step 4: Simulate Processing
-time.sleep(2)
+## ▶️ Steps to Run
 
-The task waits for 2 seconds.
+### 1. Install the required packages
 
-This delay is only for demonstration purposes. In a real application, this could be:
-
-Sending emails
-Processing images
-Generating reports
-Uploading files
-Step 5: Return the Result
-return "Hello, World! Celery is working perfectly."
-
-After completing the task, Celery returns this message.
-
-Complete Flow
-User Starts Task
-        │
-        ▼
-hello_world.delay()
-        │
-        ▼
-Redis (Stores Task)
-        │
-        ▼
-Celery Worker
-        │
-        ▼
-Runs hello_world()
-        │
-        ▼
-Waits 2 Seconds
-        │
-        ▼
-Returns Result
-        │
-        ▼
-Redis Stores Result
-        │
-        ▼
-User Gets Output
-How to Run the Project
-Step 1
-
-Install dependencies
-
+```bash
 pip install celery redis
-Step 2
+```
 
-Start Redis Server
+### 2. Start Redis
 
+```bash
 redis-server
+```
 
-Redis starts listening on port 6379.
+### 3. Start the Celery Worker
 
-Step 3
-
-Start Celery Worker
-
+```bash
 celery -A tasks worker --loglevel=info
+```
 
-The worker starts waiting for tasks.
+### 4. Run the Task
 
-Step 4
-
-Run the Task
-
+```python
 from tasks import hello_world
 
 result = hello_world.delay()
-
 print(result.get())
-Output
+```
+
+---
+
+## ✅ Expected Output
+
+```
 Hello, World! Celery is working perfectly.
+```
+
+---
+
+## 📖 Conclusion
+
+This project is a simple example of how Celery executes tasks asynchronously using Redis. It helps in understanding the basic workflow of background task processing.

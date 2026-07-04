@@ -1,16 +1,17 @@
 from celery import Celery
 import time
 
-# Initialize Celery app instance and configure local Redis broker & backend
+# Initialize Celery
+# 'tasks' is the name of the current module
+# broker: where tasks are sent
+# backend: where results are stored
 app = Celery(
-    'my_first_celery_app', 
-    broker='redis://localhost:6379/0',   # Used to send and route tasks
-    backend='redis://localhost:6379/0'   # Used to track and retrieve task states
+    'tasks', 
+    broker='redis://localhost:6379/0',
+    backend='redis://localhost:6379/0'
 )
 
-# Registering a basic background task
 @app.task
 def hello_world():
-    print("Task processing started...")
-    time.sleep(2)  # Simulating a heavy data processing or background work load
-    return "Hello, World! Celery and Redis are working perfectly."
+    time.sleep(2)  # Simulating a short delay/background work
+    return "Hello, World! Celery is working perfectly."

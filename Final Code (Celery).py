@@ -1,18 +1,16 @@
 from celery import Celery
 import time
 
-# 1. Celery ko initialize karein aur Redis broker set karein
-# Broker: Jo tasks ko queue mein le jata hai
-# Backend: Jo task ka result store karta hai
+# Initialize Celery app instance and configure local Redis broker & backend
 app = Celery(
     'my_first_celery_app', 
-    broker='redis://localhost:6379/0',
-    backend='redis://localhost:6379/0'
+    broker='redis://localhost:6379/0',   # Used to send and route tasks
+    backend='redis://localhost:6379/0'   # Used to track and retrieve task states
 )
 
-# 2. Ek simple background task define karein
+# Registering a basic background task
 @app.task
 def hello_world():
-    print("Task start ho raha hai...")
-    time.sleep(2)  # 2 second ka delay (heavy background work simulate karne ke liye)
-    return "Hello, World! Celery aur Redis perfectly kaam kar rahe hain."
+    print("Task processing started...")
+    time.sleep(2)  # Simulating a heavy data processing or background work load
+    return "Hello, World! Celery and Redis are working perfectly."

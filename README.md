@@ -1,70 +1,79 @@
-🛠️ Environment Setup & Installation
-1. Initialize the Directory & Virtual Environment
-Clone the repository, navigate into the project directory, and initialize a local Python virtual environment to manage dependencies safely:
+# Hello World using Celery
 
-Bash
-git clone [https://github.com/tebakhan/Ai-ML-Set-up-Celery-Locally-](https://github.com/tebakhan/Ai-ML-Set-up-Celery-Locally-)
-cd Ai-ML-Set-up-Celery-Locally-
+## 📌 Overview
 
-python -m venv venv
-source venv/bin/activate  # On Windows use: venv\Scripts\activate
-2. Install Project Dependencies
-Install the required framework packages via pip:
+This project demonstrates a basic Celery background task using Redis as the message broker and result backend.
 
-Bash
+The task waits for 2 seconds and then returns a simple message.
+
+---
+
+## 🛠 Technologies Used
+
+- Python
+- Celery
+- Redis
+
+---
+
+## 📂 Project Files
+
+```
+tasks.py
+```
+
+---
+
+## ⚙️ How It Works
+
+1. A Celery application is created.
+2. Redis is configured as the broker and result backend.
+3. The `hello_world` task is registered using `@app.task`.
+4. When the task is called, the Celery worker executes it in the background.
+5. The task waits for 2 seconds and returns a success message.
+
+---
+
+## ▶️ Steps to Run
+
+### 1. Install the required packages
+
+```bash
 pip install celery redis
-3. Spin Up the Redis Broker
-Launch an isolated instance of Redis locally. The cleanest and most stable approach is running it via Docker:
+```
 
-Bash
-docker run -d -p 6379:6379 redis
-📄 Code Implementation Overview (tasks.py)
-To satisfy project constraints and avoid over-engineering, the initialization, routing configuration, and task definitions are kept inside a single file:
+### 2. Start Redis
 
-Python
-from celery import Celery
-import time
+```bash
+redis-server
+```
 
-# Initialize the Celery application
-# 'tasks' matches the current module name
-app = Celery(
-    'tasks', 
-    broker='redis://localhost:6379/0',   # Location where tasks are sent
-    backend='redis://localhost:6379/0'   # Location where execution results are tracked
-)
+### 3. Start the Celery Worker
 
-# Register a basic background task using the app decorator
-@app.task
-def hello_world():
-    print("Background task execution started...")
-    time.sleep(2)  # Simulating 2 seconds of heavy computational background work
-    return "Hello, World! Celery and Redis are working perfectly."
-🚀 Execution & Verification Steps
-To demonstrate the asynchronous capabilities of the setup, open two separate terminal windows side-by-side:
-
-Step 1: Start the Celery Worker (Terminal 1)
-Run the worker process so it can sit in the background and listen for incoming messages:
-
-Bash
+```bash
 celery -A tasks worker --loglevel=info
-💡 Windows Troubleshooting Note: If your environment encounters native OS processing blockades or execution locks, append the explicit thread execution pool flag instead:
-celery -A tasks worker --loglevel=info -P threads
+```
 
-Step 2: Trigger the Asynchronous Task (Terminal 2)
-Open an interactive Python shell session to push a task to the queue live:
+### 4. Run the Task
 
-Bash
-python
-Run the following script line-by-line inside the interactive interpreter:
-
-Python
+```python
 from tasks import hello_world
 
-# Call the task asynchronously using .delay()
 result = hello_world.delay()
+print(result.get())
+```
 
-# Check the current status of the task queue instantly (Returns True or False)
-print("Is the task execution complete?:", result.ready())
+---
 
-# Wait and fetch the final returned message output from the backend
-print("Result Output:", result.get())
+## ✅ Expected Output
+
+```
+Hello, World! Celery is working perfectly.
+```
+
+---
+
+## 📖 Conclusion
+This project is a simple example of how Celery executes tasks asynchronously using Redis. It helps in understanding the basic workflow of background task processing.
+
+This project is a simple example of how Celery executes tasks asynchronously using Redis. It helps in understanding the basic workflow of background task processing.
